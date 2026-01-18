@@ -34,7 +34,6 @@ import io.icker.factions.core.WorldManager;
 import io.icker.factions.util.BlueMapWrapper;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.DynmapWrapper;
-import io.icker.factions.util.JourneyFactionsIntegration;
 import io.icker.factions.util.PlaceholdersWrapper;
 import io.icker.factions.util.SquareMapWrapper;
 import io.icker.factions.util.WorldUtils;
@@ -73,10 +72,6 @@ public class FactionsMod implements ModInitializer {
         ServerManager.register();
         SoundManager.register();
         WorldManager.register();
-
-        if (FactionsMod.CONFIG.JOURNEYFACTIONS_INTEGRATION) {
-            JourneyFactionsIntegration.initialize();
-        }
 
         CommandRegistrationCallback.EVENT.register(FactionsMod::registerCommands);
     }

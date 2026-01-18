@@ -131,9 +131,6 @@ public class Config {
     @SerializedName("claimProtections")
     public boolean CLAIM_PROTECTION = true;
 
-    @SerializedName("JourneyFactionsIntegration")
-    public boolean JOURNEYFACTIONS_INTEGRATION = false;
-
     public static class DisplayConfig {
         @SerializedName("factionNameMaxLength")
         public int NAME_MAX_LENGTH = -1;
