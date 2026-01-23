@@ -28,6 +28,8 @@ public class Config {
                 .registerTypeAdapter(HomeConfig.class, new Deserializer<>(HomeConfig.class))
                 .registerTypeAdapter(PowerConfig.class, new Deserializer<>(PowerConfig.class))
                 .registerTypeAdapter(SafeConfig.class, new Deserializer<>(SafeConfig.class))
+                .registerTypeAdapter(VassalConfig.class, new Deserializer<>(VassalConfig.class))
+                .registerTypeAdapter(GodsConfig.class, new Deserializer<>(GodsConfig.class))
                 .create();
 
         try {
@@ -58,6 +60,14 @@ public class Config {
                 config.DISPLAY = defaults.DISPLAY;
             }
 
+            if (config.VASSAL == null) {
+                config.VASSAL = defaults.VASSAL;
+            }
+
+            if (config.GODS == null) {
+                config.GODS = defaults.GODS;
+            }
+
             if (config.VERSION != REQUIRED_VERSION) {
                 FactionsMod.LOGGER.error(String.format(
                         "Config file incompatible (requires version %d)", REQUIRED_VERSION));
@@ -81,6 +91,8 @@ public class Config {
                     .registerTypeAdapter(HomeConfig.class, new Deserializer<>(HomeConfig.class))
                     .registerTypeAdapter(PowerConfig.class, new Deserializer<>(PowerConfig.class))
                     .registerTypeAdapter(SafeConfig.class, new Deserializer<>(SafeConfig.class))
+                    .registerTypeAdapter(VassalConfig.class, new Deserializer<>(VassalConfig.class))
+                    .registerTypeAdapter(GodsConfig.class, new Deserializer<>(GodsConfig.class))
                     .create();
 
             FileWriter writer = new FileWriter(file);
@@ -98,6 +110,9 @@ public class Config {
 
     @SerializedName("version")
     public int VERSION = REQUIRED_VERSION;
+
+    @SerializedName("_comment_blockTNT")
+    public String _COMMENT_BLOCK_TNT = "Whether TNT explosions are blocked in claimed territory";
 
     @SerializedName("blockTNT")
     public boolean BLOCK_TNT = false;
@@ -119,14 +134,32 @@ public class Config {
     @SerializedName("relationships")
     public RelationshipConfig RELATIONSHIPS = new RelationshipConfig();
 
+    @SerializedName("vassal")
+    public VassalConfig VASSAL = new VassalConfig();
+
+    @SerializedName("gods")
+    public GodsConfig GODS = new GodsConfig();
+
+    @SerializedName("_comment_maxFactionSize")
+    public String _COMMENT_MAX_FACTION_SIZE = "Maximum members per faction (-1 = unlimited)";
+
     @SerializedName("maxFactionSize")
     public int MAX_FACTION_SIZE = -1;
+
+    @SerializedName("_comment_friendlyFire")
+    public String _COMMENT_FRIENDLY_FIRE = "Whether faction members can damage each other";
 
     @SerializedName("friendlyFire")
     public boolean FRIENDLY_FIRE = false;
 
+    @SerializedName("_comment_requiredBypassLevel")
+    public String _COMMENT_REQUIRED_BYPASS_LEVEL = "Permission level required for admin commands (0-4)";
+
     @SerializedName("requiredBypassLevel")
     public int REQUIRED_BYPASS_LEVEL = 2;
+
+    @SerializedName("_comment_claimProtections")
+    public String _COMMENT_CLAIM_PROTECTION = "Whether claimed chunks are protected from non-members";
 
     @SerializedName("claimProtections")
     public boolean CLAIM_PROTECTION = true;

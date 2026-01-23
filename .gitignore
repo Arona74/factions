@@ -5,6 +5,9 @@ build/
 out/
 classes/
 
+# Claude
+.claude/
+
 # eclipse
 
 *.launch
