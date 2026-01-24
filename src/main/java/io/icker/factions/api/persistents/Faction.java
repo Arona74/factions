@@ -163,8 +163,8 @@ public class Faction {
 
     public int getPower() {
         int basePowerMax = getBasePowerMax();
-        int basePower = Math.min(power + adminPower, basePowerMax);
-        return basePower + getWealthPower() + getWarPower() + getFamePower() + getVassalPowerBonus();
+        int basePower = Math.min(power, basePowerMax);
+        return basePower + adminPower + getWealthPower() + getWarPower() + getFamePower() + getVassalPowerBonus();
     }
 
     public int getBasePowerMax() {
@@ -677,7 +677,7 @@ public class Faction {
     }
 
     public Collection<User> getRelationships() {
-        // TODO Auto-generated method stub
+        // TO DO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getRelationships'");
     }
 

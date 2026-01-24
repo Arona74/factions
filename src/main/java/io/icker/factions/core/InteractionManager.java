@@ -288,7 +288,7 @@ public class InteractionManager {
 
         Faction claimFaction = claim.getFaction();
 
-        if (claimFaction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT > claimFaction
+        if (!claimFaction.isAdminProtected() && claimFaction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT > claimFaction
                 .getPower()) {
             return ActionResult.PASS;
         }
