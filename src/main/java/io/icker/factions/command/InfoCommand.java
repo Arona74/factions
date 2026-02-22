@@ -167,9 +167,23 @@ public class InfoCommand implements Command {
                 .append(Text.literal("Formula: ").formatted(Formatting.GRAY))
                 .append(Text.literal(claimCount + " × " + claimWeight + " = " + requiredPower).formatted(Formatting.WHITE));
 
-        new Message(Formatting.GOLD + "Required Power: ").add(Formatting.GREEN.toString()
-                + requiredPower)
+        boolean powerInsufficient = faction.getPower() < requiredPower;
+        new Message(Formatting.GOLD + "Required Power: ").add(
+                (powerInsufficient ? Formatting.RED : Formatting.GREEN).toString() + requiredPower)
                 .hover(requiredHover).send(player, false);
+
+        if (powerInsufficient && !faction.isAdminProtected()) {
+            if (FactionsMod.CONFIG.CLAIM_PROTECTION) {
+                new Message(Formatting.RED + "Not enough power to sustain the claims! Protections are currently off!").send(player, false);
+            }
+            if (FactionsMod.CONFIG.POWER.CLAIM_DECAY_ENABLED) {
+                int decaySeconds = FactionsMod.CONFIG.POWER.DECAY_CHECK_TICKS / 20;
+                String decayRate = decaySeconds >= 60
+                        ? (decaySeconds / 60) + " minute" + (decaySeconds / 60 == 1 ? "" : "s")
+                        : decaySeconds + " second" + (decaySeconds == 1 ? "" : "s");
+                new Message(Formatting.RED + "Farthest claims will decay automatically every " + decayRate + ".").send(player, false);
+            }
+        }
 
         // Show vassal information
         if (FactionsMod.CONFIG.VASSAL.ENABLED) {

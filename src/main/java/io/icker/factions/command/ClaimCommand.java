@@ -129,8 +129,9 @@ public class ClaimCommand implements Command {
         ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
         Faction faction = Command.getUser(player).getFaction();
 
+        int newChunks = (2 * size - 1) * (2 * size - 1);
         int requiredPower =
-                (faction.getClaims().size() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
+                (faction.getClaims().size() + newChunks) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
         int currentPower = faction.getPower();
 
         if (currentPower < requiredPower) {

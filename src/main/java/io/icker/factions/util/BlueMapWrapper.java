@@ -125,13 +125,15 @@ public class BlueMapWrapper {
                         markerSets.put(level, markerSet);
                     }
 
+                    int minY = FactionsMod.CONFIG.BLUEMAP.MARKER_MIN_Y;
+                    int maxY = FactionsMod.CONFIG.BLUEMAP.MARKER_MAX_Y;
                     ExtrudeMarker marker =
                             ExtrudeMarker.builder()
                                     .position(
                                             (double) outlines.get(0).get(0).getX(),
-                                            320,
+                                            maxY,
                                             (double) outlines.get(0).get(0).getY())
-                                    .shape(shapes.remove(0), -64, 320)
+                                    .shape(shapes.remove(0), minY, maxY)
                                     .holes(shapes.toArray(new Shape[0]))
                                     .fillColor(
                                             new Color(

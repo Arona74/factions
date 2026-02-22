@@ -68,6 +68,10 @@ public class Config {
                 config.GODS = defaults.GODS;
             }
 
+            if (config.BLUEMAP == null) {
+                config.BLUEMAP = defaults.BLUEMAP;
+            }
+
             if (config.VERSION != REQUIRED_VERSION) {
                 FactionsMod.LOGGER.error(String.format(
                         "Config file incompatible (requires version %d)", REQUIRED_VERSION));
@@ -140,6 +144,9 @@ public class Config {
     @SerializedName("gods")
     public GodsConfig GODS = new GodsConfig();
 
+    @SerializedName("bluemap")
+    public BlueMapConfig BLUEMAP = new BlueMapConfig();
+
     @SerializedName("_comment_maxFactionSize")
     public String _COMMENT_MAX_FACTION_SIZE = "Maximum members per faction (-1 = unlimited)";
 
@@ -191,6 +198,20 @@ public class Config {
 
         @SerializedName("compatSkillDamageProtectionfor")
         public compatSkillDamageProtectionfor COMPAT_SKILL_DAMAGE_PROTECTION_FOR = compatSkillDamageProtectionfor.NEUTRAL;
+    }
+
+    public static class BlueMapConfig {
+        @SerializedName("_comment_markerMinY")
+        public String _COMMENT_MARKER_MIN_Y = "Minimum Y value for extruded claim markers on BlueMap";
+
+        @SerializedName("markerMinY")
+        public int MARKER_MIN_Y = -64;
+
+        @SerializedName("_comment_markerMaxY")
+        public String _COMMENT_MARKER_MAX_Y = "Maximum Y value for extruded claim markers on BlueMap";
+
+        @SerializedName("markerMaxY")
+        public int MARKER_MAX_Y = 320;
     }
 
     public static class Deserializer<T> implements JsonDeserializer<T> {
