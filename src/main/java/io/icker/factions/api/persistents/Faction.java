@@ -672,8 +672,12 @@ public class Faction {
         Database.save(Faction.class, STORE.values().stream().toList());
     }
 
+    public void fillBasePower() {
+        power = getBasePowerMax();
+    }
+
     public int calculateMaxPower() {
-        return getBasePowerMax() + adminPower + FactionsMod.CONFIG.POWER.WEALTH.MAX_VALUE + FactionsMod.CONFIG.POWER.WAR.MAX_VALUE + getVassalPowerBonus();
+        return getBasePowerMax() + adminPower + FactionsMod.CONFIG.POWER.WEALTH.MAX_VALUE + FactionsMod.CONFIG.POWER.WAR.MAX_VALUE + FactionsMod.CONFIG.POWER.FAME.MAX_VALUE + getVassalPowerBonus();
     }
 
     public Collection<User> getRelationships() {

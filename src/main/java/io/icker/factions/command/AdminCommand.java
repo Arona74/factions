@@ -72,6 +72,17 @@ public class AdminCommand implements Command {
         return 1;
     }
 
+    private int powerRecalc(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
+        int count = 0;
+        for (Faction faction : Faction.all()) {
+            faction.fillBasePower();
+            count++;
+        }
+        new Message("Recalculated base power for %d factions", count).send(player, false);
+        return 1;
+    }
+
     private int spoof(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayerOrThrow();
@@ -625,6 +636,8 @@ public class AdminCommand implements Command {
                         .requires(
                                 Requires.hasPerms("factions.admin.power",
                                         FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
+                        .then(CommandManager.literal("recalc")
+                                .executes(this::powerRecalc))
                         .then(CommandManager.argument("power", IntegerArgumentType.integer())
                                 .then(CommandManager
                                         .argument("faction", StringArgumentType.greedyString())
