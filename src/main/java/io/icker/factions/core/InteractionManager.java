@@ -17,6 +17,7 @@ import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
@@ -208,10 +209,17 @@ public class InteractionManager {
 
     private static ActionResult onAttackEntity(PlayerEntity player, World world, Hand hand,
             Entity entity, EntityHitResult hitResult) {
-        if (entity != null && checkPermissions(player, entity.getBlockPos(), world,
-                Permissions.ATTACK_ENTITIES) == ActionResult.FAIL) {
-            InteractionsUtil.warn(player, InteractionsUtilActions.ATTACK_ENTITIES);
-            return ActionResult.FAIL;
+        if (entity != null) {
+            Permissions permission = (entity instanceof Monster)
+                    ? Permissions.ATTACK_MOBS
+                    : Permissions.ATTACK_ENTITIES;
+            InteractionsUtilActions action = (entity instanceof Monster)
+                    ? InteractionsUtilActions.ATTACK_MOBS
+                    : InteractionsUtilActions.ATTACK_ENTITIES;
+            if (checkPermissions(player, entity.getBlockPos(), world, permission) == ActionResult.FAIL) {
+                InteractionsUtil.warn(player, action);
+                return ActionResult.FAIL;
+            }
         }
 
         return ActionResult.PASS;
@@ -283,8 +291,15 @@ public class InteractionManager {
         ChunkPos chunkPosition = world.getChunk(position).getPos();
 
         Claim claim = Claim.get(chunkPosition.x, chunkPosition.z, dimension);
-        if (claim == null)
+        if (claim == null) {
+            if (FactionsMod.CONFIG.RESTRICTED_WILDERNESS
+                    && FactionsMod.CONFIG.WILDERNESS_RESTRICTED_DIMENSIONS.contains(dimension)) {
+                return FactionsMod.CONFIG.WILDERNESS_PERMISSIONS.contains(permission)
+                        ? ActionResult.PASS
+                        : ActionResult.FAIL;
+            }
             return ActionResult.PASS;
+        }
 
         Faction claimFaction = claim.getFaction();
 

@@ -12,7 +12,7 @@ public class Relationship {
     }
 
     public enum Permissions {
-        USE_BLOCKS, PLACE_BLOCKS, BREAK_BLOCKS, USE_ENTITIES, ATTACK_ENTITIES, USE_INVENTORIES
+        USE_BLOCKS, PLACE_BLOCKS, BREAK_BLOCKS, USE_ENTITIES, ATTACK_ENTITIES, ATTACK_MOBS, USE_INVENTORIES
     }
 
     @Field("Target")

@@ -32,6 +32,7 @@ public class InteractionsUtil {
         PLACE_BLOCKS,
         PLACE_OR_PICKUP_LIQUIDS,
         ATTACK_ENTITIES,
+        ATTACK_MOBS,
         USE_ENTITIES,
         USE_INVENTORY
     }

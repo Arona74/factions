@@ -62,6 +62,7 @@ public class User {
     public boolean autoclaim = false;
     public boolean bypass = false;
     public String language = "en_us";
+    public String lastTerritoryKey = null; // transient: not persisted, tracks territory for entry/exit notifications
 
     private User spoof;
 

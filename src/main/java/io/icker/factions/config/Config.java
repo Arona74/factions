@@ -58,6 +58,10 @@ public class Config {
 
             if (config.DISPLAY == null) {
                 config.DISPLAY = defaults.DISPLAY;
+            } else {
+                if (config.DISPLAY.TERRITORY_NOTIFICATION == null) {
+                    config.DISPLAY.TERRITORY_NOTIFICATION = defaults.DISPLAY.TERRITORY_NOTIFICATION;
+                }
             }
 
             if (config.VASSAL == null) {
@@ -171,6 +175,42 @@ public class Config {
     @SerializedName("claimProtections")
     public boolean CLAIM_PROTECTION = true;
 
+    @SerializedName("_comment_restrictedWilderness")
+    public String _COMMENT_RESTRICTED_WILDERNESS = "When enabled, unclaimed wilderness follows wildernessPermissions instead of being fully open";
+
+    @SerializedName("restrictedWilderness")
+    public boolean RESTRICTED_WILDERNESS = false;
+
+    @SerializedName("wildernessPermissions")
+    public List<Relationship.Permissions> WILDERNESS_PERMISSIONS =
+            List.of(Relationship.Permissions.USE_BLOCKS, Relationship.Permissions.USE_ENTITIES, Relationship.Permissions.ATTACK_MOBS);
+
+    @SerializedName("wildernessRestrictedDimensions")
+    public List<String> WILDERNESS_RESTRICTED_DIMENSIONS = List.of("minecraft:overworld");
+
+    public static class TerritoryNotificationConfig {
+        @SerializedName("chat")
+        public boolean CHAT = false;
+
+        @SerializedName("actionBar")
+        public boolean ACTION_BAR = false;
+
+        @SerializedName("title")
+        public boolean TITLE = true;
+
+        @SerializedName("_comment_titleFade")
+        public String _COMMENT_TITLE_FADE = "Title animation durations in ticks (20 ticks = 1 second)";
+
+        @SerializedName("titleFadeIn")
+        public int TITLE_FADE_IN = 10;
+
+        @SerializedName("titleStay")
+        public int TITLE_STAY = 50;
+
+        @SerializedName("titleFadeOut")
+        public int TITLE_FADE_OUT = 20;
+    }
+
     public static class DisplayConfig {
         @SerializedName("factionNameMaxLength")
         public int NAME_MAX_LENGTH = -1;
@@ -186,6 +226,12 @@ public class Config {
 
         @SerializedName("powerMessage")
         public boolean POWER_MESSAGE = true;
+
+        @SerializedName("_comment_territoryNotification")
+        public String _COMMENT_TERRITORY_NOTIFICATION = "Territory entry/exit notifications: chat, actionBar and title can be enabled independently";
+
+        @SerializedName("territoryNotification")
+        public TerritoryNotificationConfig TERRITORY_NOTIFICATION = new TerritoryNotificationConfig();
     }
 
     public static class RelationshipConfig {
@@ -194,7 +240,7 @@ public class Config {
 
         @SerializedName("defaultGuestPermissions")
         public List<Relationship.Permissions> DEFAULT_GUEST_PERMISSIONS =
-                List.of(Relationship.Permissions.USE_BLOCKS, Relationship.Permissions.USE_ENTITIES);
+                List.of(Relationship.Permissions.USE_BLOCKS, Relationship.Permissions.USE_ENTITIES, Relationship.Permissions.ATTACK_MOBS);
 
         @SerializedName("compatSkillDamageProtectionfor")
         public compatSkillDamageProtectionfor COMPAT_SKILL_DAMAGE_PROTECTION_FOR = compatSkillDamageProtectionfor.NEUTRAL;
