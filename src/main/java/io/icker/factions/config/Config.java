@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.Nullable;
 import com.google.gson.Gson;
@@ -30,6 +31,7 @@ public class Config {
                 .registerTypeAdapter(SafeConfig.class, new Deserializer<>(SafeConfig.class))
                 .registerTypeAdapter(VassalConfig.class, new Deserializer<>(VassalConfig.class))
                 .registerTypeAdapter(GodsConfig.class, new Deserializer<>(GodsConfig.class))
+                .registerTypeAdapter(FilterListConfig.class, new Deserializer<>(FilterListConfig.class))
                 .create();
 
         try {
@@ -78,6 +80,14 @@ public class Config {
 
             if (config.BLUEMAP == null) {
                 config.BLUEMAP = defaults.BLUEMAP;
+            }
+
+            if (config.BLOCK_LIST == null) {
+                config.BLOCK_LIST = defaults.BLOCK_LIST;
+            }
+
+            if (config.MOB_LIST == null) {
+                config.MOB_LIST = defaults.MOB_LIST;
             }
 
             if (config.VERSION != REQUIRED_VERSION) {
@@ -154,6 +164,24 @@ public class Config {
 
     @SerializedName("bluemap")
     public BlueMapConfig BLUEMAP = new BlueMapConfig();
+
+    @SerializedName("_comment_carryOnEntityPlacement")
+    public String _COMMENT_CARRY_ON_ENTITY_PLACEMENT = "Whether CarryOn mod entity placement (putting down a carried mob/player) is blocked by claim protection";
+
+    @SerializedName("carryOnEntityPlacement")
+    public boolean CARRY_ON_ENTITY_PLACEMENT = false;
+
+    @SerializedName("_comment_blockList")
+    public String _COMMENT_BLOCK_LIST = "Block filter lists. Blacklist: only listed blocks are subject to claim protection. Whitelist: listed blocks always bypass protection. Whitelist takes priority when both enabled.";
+
+    @SerializedName("blockList")
+    public FilterListConfig BLOCK_LIST = new FilterListConfig();
+
+    @SerializedName("_comment_mobList")
+    public String _COMMENT_MOB_LIST = "Mob filter lists. Blacklist: only listed mobs are subject to claim protection. Whitelist: listed mobs always bypass protection. Whitelist takes priority when both enabled.";
+
+    @SerializedName("mobList")
+    public FilterListConfig MOB_LIST = new FilterListConfig();
 
     @SerializedName("_comment_maxFactionSize")
     public String _COMMENT_MAX_FACTION_SIZE = "Maximum members per faction (-1 = unlimited)";
@@ -274,6 +302,20 @@ public class Config {
 
         @SerializedName("markerMaxY")
         public int MARKER_MAX_Y = 320;
+    }
+
+    public static class FilterListConfig {
+        @SerializedName("blacklistEnabled")
+        public boolean BLACKLIST_ENABLED = false;
+
+        @SerializedName("blacklist")
+        public ArrayList<String> BLACKLIST = new ArrayList<>();
+
+        @SerializedName("whitelistEnabled")
+        public boolean WHITELIST_ENABLED = false;
+
+        @SerializedName("whitelist")
+        public ArrayList<String> WHITELIST = new ArrayList<>();
     }
 
     public static class Deserializer<T> implements JsonDeserializer<T> {

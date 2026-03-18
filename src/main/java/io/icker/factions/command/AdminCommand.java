@@ -12,6 +12,7 @@ import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.core.FactionsManager;
+import io.icker.factions.core.InteractionManager;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 
@@ -270,6 +271,10 @@ public class AdminCommand implements Command {
                         .format(FactionsMod.CONFIG.CLAIM_PROTECTION ? Formatting.GREEN : Formatting.RED))
                 .send(player, false);
         new Message(Formatting.GRAY + "  Max Faction Size: " + Formatting.WHITE + FactionsMod.CONFIG.MAX_FACTION_SIZE).send(player, false);
+        new Message(Formatting.GRAY + "  CarryOn Entity Placement: ")
+                .add(new Message(FactionsMod.CONFIG.CARRY_ON_ENTITY_PLACEMENT ? "true" : "false")
+                        .format(FactionsMod.CONFIG.CARRY_ON_ENTITY_PLACEMENT ? Formatting.GREEN : Formatting.RED))
+                .send(player, false);
 
         // Power settings
         new Message(Formatting.YELLOW + "Power Settings:").send(player, false);
@@ -367,6 +372,32 @@ public class AdminCommand implements Command {
                 .add(new Message(FactionsMod.CONFIG.DISPLAY.POWER_MESSAGE ? "true" : "false")
                         .format(FactionsMod.CONFIG.DISPLAY.POWER_MESSAGE ? Formatting.GREEN : Formatting.RED))
                 .send(player, false);
+
+        // Block list settings
+        new Message(Formatting.YELLOW + "Block List Settings:").send(player, false);
+        new Message(Formatting.GRAY + "  Blacklist Enabled: ")
+                .add(new Message(FactionsMod.CONFIG.BLOCK_LIST.BLACKLIST_ENABLED ? "true" : "false")
+                        .format(FactionsMod.CONFIG.BLOCK_LIST.BLACKLIST_ENABLED ? Formatting.GREEN : Formatting.RED))
+                .send(player, false);
+        new Message(Formatting.GRAY + "  Blacklist: " + Formatting.WHITE + String.join(", ", FactionsMod.CONFIG.BLOCK_LIST.BLACKLIST)).send(player, false);
+        new Message(Formatting.GRAY + "  Whitelist Enabled: ")
+                .add(new Message(FactionsMod.CONFIG.BLOCK_LIST.WHITELIST_ENABLED ? "true" : "false")
+                        .format(FactionsMod.CONFIG.BLOCK_LIST.WHITELIST_ENABLED ? Formatting.GREEN : Formatting.RED))
+                .send(player, false);
+        new Message(Formatting.GRAY + "  Whitelist: " + Formatting.WHITE + String.join(", ", FactionsMod.CONFIG.BLOCK_LIST.WHITELIST)).send(player, false);
+
+        // Mob list settings
+        new Message(Formatting.YELLOW + "Mob List Settings:").send(player, false);
+        new Message(Formatting.GRAY + "  Blacklist Enabled: ")
+                .add(new Message(FactionsMod.CONFIG.MOB_LIST.BLACKLIST_ENABLED ? "true" : "false")
+                        .format(FactionsMod.CONFIG.MOB_LIST.BLACKLIST_ENABLED ? Formatting.GREEN : Formatting.RED))
+                .send(player, false);
+        new Message(Formatting.GRAY + "  Blacklist: " + Formatting.WHITE + String.join(", ", FactionsMod.CONFIG.MOB_LIST.BLACKLIST)).send(player, false);
+        new Message(Formatting.GRAY + "  Whitelist Enabled: ")
+                .add(new Message(FactionsMod.CONFIG.MOB_LIST.WHITELIST_ENABLED ? "true" : "false")
+                        .format(FactionsMod.CONFIG.MOB_LIST.WHITELIST_ENABLED ? Formatting.GREEN : Formatting.RED))
+                .send(player, false);
+        new Message(Formatting.GRAY + "  Whitelist: " + Formatting.WHITE + String.join(", ", FactionsMod.CONFIG.MOB_LIST.WHITELIST)).send(player, false);
 
         return 1;
     }
@@ -620,6 +651,154 @@ public class AdminCommand implements Command {
         return 1;
     }
 
+    // Debug
+    private int toggleDebugPermissions(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
+        InteractionManager.DEBUG_PERMISSIONS = !InteractionManager.DEBUG_PERMISSIONS;
+        new Message("Permission debug logging").filler("·")
+                .add(new Message(InteractionManager.DEBUG_PERMISSIONS ? "ON" : "OFF")
+                        .format(InteractionManager.DEBUG_PERMISSIONS ? Formatting.GREEN : Formatting.RED))
+                .send(player, false);
+        return 1;
+    }
+
+    private int setCarryOnEntityPlacement(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        boolean value = BoolArgumentType.getBool(context, "value");
+        FactionsMod.CONFIG.CARRY_ON_ENTITY_PLACEMENT = value;
+        sendConfigUpdate(context.getSource().getPlayerOrThrow(), "carryOnEntityPlacement", value);
+        return 1;
+    }
+
+    // Block list config
+    private int setBlockListBlacklistEnabled(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        boolean value = BoolArgumentType.getBool(context, "value");
+        FactionsMod.CONFIG.BLOCK_LIST.BLACKLIST_ENABLED = value;
+        sendConfigUpdate(context.getSource().getPlayerOrThrow(), "blockList.blacklistEnabled", value);
+        return 1;
+    }
+
+    private int addBlockListBlacklist(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
+        String id = StringArgumentType.getString(context, "id");
+        if (FactionsMod.CONFIG.BLOCK_LIST.BLACKLIST.contains(id)) {
+            new Message("%s is already in the block blacklist", id).fail().send(player, false);
+            return 0;
+        }
+        FactionsMod.CONFIG.BLOCK_LIST.BLACKLIST.add(id);
+        FactionsMod.CONFIG.save();
+        new Message("Added %s to block blacklist", id).send(player, false);
+        return 1;
+    }
+
+    private int removeBlockListBlacklist(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
+        String id = StringArgumentType.getString(context, "id");
+        if (!FactionsMod.CONFIG.BLOCK_LIST.BLACKLIST.remove(id)) {
+            new Message("%s is not in the block blacklist", id).fail().send(player, false);
+            return 0;
+        }
+        FactionsMod.CONFIG.save();
+        new Message("Removed %s from block blacklist", id).send(player, false);
+        return 1;
+    }
+
+    private int setBlockListWhitelistEnabled(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        boolean value = BoolArgumentType.getBool(context, "value");
+        FactionsMod.CONFIG.BLOCK_LIST.WHITELIST_ENABLED = value;
+        sendConfigUpdate(context.getSource().getPlayerOrThrow(), "blockList.whitelistEnabled", value);
+        return 1;
+    }
+
+    private int addBlockListWhitelist(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
+        String id = StringArgumentType.getString(context, "id");
+        if (FactionsMod.CONFIG.BLOCK_LIST.WHITELIST.contains(id)) {
+            new Message("%s is already in the block whitelist", id).fail().send(player, false);
+            return 0;
+        }
+        FactionsMod.CONFIG.BLOCK_LIST.WHITELIST.add(id);
+        FactionsMod.CONFIG.save();
+        new Message("Added %s to block whitelist", id).send(player, false);
+        return 1;
+    }
+
+    private int removeBlockListWhitelist(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
+        String id = StringArgumentType.getString(context, "id");
+        if (!FactionsMod.CONFIG.BLOCK_LIST.WHITELIST.remove(id)) {
+            new Message("%s is not in the block whitelist", id).fail().send(player, false);
+            return 0;
+        }
+        FactionsMod.CONFIG.save();
+        new Message("Removed %s from block whitelist", id).send(player, false);
+        return 1;
+    }
+
+    // Mob list config
+    private int setMobListBlacklistEnabled(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        boolean value = BoolArgumentType.getBool(context, "value");
+        FactionsMod.CONFIG.MOB_LIST.BLACKLIST_ENABLED = value;
+        sendConfigUpdate(context.getSource().getPlayerOrThrow(), "mobList.blacklistEnabled", value);
+        return 1;
+    }
+
+    private int addMobListBlacklist(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
+        String id = StringArgumentType.getString(context, "id");
+        if (FactionsMod.CONFIG.MOB_LIST.BLACKLIST.contains(id)) {
+            new Message("%s is already in the mob blacklist", id).fail().send(player, false);
+            return 0;
+        }
+        FactionsMod.CONFIG.MOB_LIST.BLACKLIST.add(id);
+        FactionsMod.CONFIG.save();
+        new Message("Added %s to mob blacklist", id).send(player, false);
+        return 1;
+    }
+
+    private int removeMobListBlacklist(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
+        String id = StringArgumentType.getString(context, "id");
+        if (!FactionsMod.CONFIG.MOB_LIST.BLACKLIST.remove(id)) {
+            new Message("%s is not in the mob blacklist", id).fail().send(player, false);
+            return 0;
+        }
+        FactionsMod.CONFIG.save();
+        new Message("Removed %s from mob blacklist", id).send(player, false);
+        return 1;
+    }
+
+    private int setMobListWhitelistEnabled(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        boolean value = BoolArgumentType.getBool(context, "value");
+        FactionsMod.CONFIG.MOB_LIST.WHITELIST_ENABLED = value;
+        sendConfigUpdate(context.getSource().getPlayerOrThrow(), "mobList.whitelistEnabled", value);
+        return 1;
+    }
+
+    private int addMobListWhitelist(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
+        String id = StringArgumentType.getString(context, "id");
+        if (FactionsMod.CONFIG.MOB_LIST.WHITELIST.contains(id)) {
+            new Message("%s is already in the mob whitelist", id).fail().send(player, false);
+            return 0;
+        }
+        FactionsMod.CONFIG.MOB_LIST.WHITELIST.add(id);
+        FactionsMod.CONFIG.save();
+        new Message("Added %s to mob whitelist", id).send(player, false);
+        return 1;
+    }
+
+    private int removeMobListWhitelist(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
+        String id = StringArgumentType.getString(context, "id");
+        if (!FactionsMod.CONFIG.MOB_LIST.WHITELIST.remove(id)) {
+            new Message("%s is not in the mob whitelist", id).fail().send(player, false);
+            return 0;
+        }
+        FactionsMod.CONFIG.save();
+        new Message("Removed %s from mob whitelist", id).send(player, false);
+        return 1;
+    }
+
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager.literal("admin")
                 .then(CommandManager.literal("bypass")
@@ -679,6 +858,11 @@ public class AdminCommand implements Command {
                                 .executes(this::claimDecayEnable))
                         .then(CommandManager.literal("disable")
                                 .executes(this::claimDecayDisable)))
+                .then(CommandManager.literal("debug")
+                        .requires(Requires.hasPerms("factions.admin.debug",
+                                FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
+                        .then(CommandManager.literal("permissions")
+                                .executes(this::toggleDebugPermissions)))
                 .then(CommandManager.literal("config")
                         .requires(Requires.hasPerms("factions.admin.config",
                                 FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
@@ -697,6 +881,9 @@ public class AdminCommand implements Command {
                                 .then(CommandManager.literal("claimProtection")
                                         .then(CommandManager.argument("value", BoolArgumentType.bool())
                                                 .executes(this::setClaimProtection)))
+                                .then(CommandManager.literal("carryOnEntityPlacement")
+                                        .then(CommandManager.argument("value", BoolArgumentType.bool())
+                                                .executes(this::setCarryOnEntityPlacement)))
                                 // Power config
                                 .then(CommandManager.literal("power")
                                         .then(CommandManager.literal("base")
@@ -796,7 +983,51 @@ public class AdminCommand implements Command {
                                                         .executes(this::setVassalPowerPercent)))
                                         .then(CommandManager.literal("requireAlly")
                                                 .then(CommandManager.argument("value", BoolArgumentType.bool())
-                                                        .executes(this::setVassalRequireAlly))))))
+                                                        .executes(this::setVassalRequireAlly))))
+                                // Block list config
+                                .then(CommandManager.literal("blockList")
+                                        .then(CommandManager.literal("blacklist")
+                                                .then(CommandManager.literal("enabled")
+                                                        .then(CommandManager.argument("value", BoolArgumentType.bool())
+                                                                .executes(this::setBlockListBlacklistEnabled)))
+                                                .then(CommandManager.literal("add")
+                                                        .then(CommandManager.argument("id", StringArgumentType.string())
+                                                                .executes(this::addBlockListBlacklist)))
+                                                .then(CommandManager.literal("remove")
+                                                        .then(CommandManager.argument("id", StringArgumentType.string())
+                                                                .executes(this::removeBlockListBlacklist))))
+                                        .then(CommandManager.literal("whitelist")
+                                                .then(CommandManager.literal("enabled")
+                                                        .then(CommandManager.argument("value", BoolArgumentType.bool())
+                                                                .executes(this::setBlockListWhitelistEnabled)))
+                                                .then(CommandManager.literal("add")
+                                                        .then(CommandManager.argument("id", StringArgumentType.string())
+                                                                .executes(this::addBlockListWhitelist)))
+                                                .then(CommandManager.literal("remove")
+                                                        .then(CommandManager.argument("id", StringArgumentType.string())
+                                                                .executes(this::removeBlockListWhitelist)))))
+                                // Mob list config
+                                .then(CommandManager.literal("mobList")
+                                        .then(CommandManager.literal("blacklist")
+                                                .then(CommandManager.literal("enabled")
+                                                        .then(CommandManager.argument("value", BoolArgumentType.bool())
+                                                                .executes(this::setMobListBlacklistEnabled)))
+                                                .then(CommandManager.literal("add")
+                                                        .then(CommandManager.argument("id", StringArgumentType.string())
+                                                                .executes(this::addMobListBlacklist)))
+                                                .then(CommandManager.literal("remove")
+                                                        .then(CommandManager.argument("id", StringArgumentType.string())
+                                                                .executes(this::removeMobListBlacklist))))
+                                        .then(CommandManager.literal("whitelist")
+                                                .then(CommandManager.literal("enabled")
+                                                        .then(CommandManager.argument("value", BoolArgumentType.bool())
+                                                                .executes(this::setMobListWhitelistEnabled)))
+                                                .then(CommandManager.literal("add")
+                                                        .then(CommandManager.argument("id", StringArgumentType.string())
+                                                                .executes(this::addMobListWhitelist)))
+                                                .then(CommandManager.literal("remove")
+                                                        .then(CommandManager.argument("id", StringArgumentType.string())
+                                                                .executes(this::removeMobListWhitelist)))))))
                 .build();
     }
 }
