@@ -67,6 +67,12 @@ public class PowerConfig {
     @SerializedName("claimDecayEnabled")
     public boolean CLAIM_DECAY_ENABLED = true;
 
+    @SerializedName("_comment_unclaimCooldownSeconds")
+    public String _COMMENT_UNCLAIM_COOLDOWN_SECONDS = "Cooldown in seconds before a recently unclaimed chunk can be claimed again by any faction (0 = disabled)";
+
+    @SerializedName("unclaimCooldownSeconds")
+    public int UNCLAIM_COOLDOWN_SECONDS = 0;
+
     @SerializedName("war")
     public WarPower WAR = new WarPower();
 

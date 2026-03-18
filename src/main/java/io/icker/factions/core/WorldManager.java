@@ -48,10 +48,20 @@ public class WorldManager {
                         .send(player, false);
                 user.autoclaim = false;
             } else {
-                faction.addClaim(chunkPos.x, chunkPos.z, dimension);
-                claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
-                new Message("Chunk (%d, %d) claimed by %s", chunkPos.x, chunkPos.z,
-                        player.getName().getString()).send(faction);
+                int cooldownSeconds = FactionsMod.CONFIG.POWER.UNCLAIM_COOLDOWN_SECONDS;
+                long remaining = (cooldownSeconds > 0 && faction.lastUnclaimTime > 0)
+                        ? Math.max(0, (cooldownSeconds * 1000L) - (System.currentTimeMillis() - faction.lastUnclaimTime))
+                        : 0;
+                if (remaining > 0) {
+                    new Message("Your faction cannot claim chunks for another %ds, autoclaim toggled off",
+                            remaining / 1000 + 1).fail().send(player, false);
+                    user.autoclaim = false;
+                } else {
+                    faction.addClaim(chunkPos.x, chunkPos.z, dimension);
+                    claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
+                    new Message("Chunk (%d, %d) claimed by %s", chunkPos.x, chunkPos.z,
+                            player.getName().getString()).send(faction);
+                }
             }
         }
 

@@ -72,6 +72,9 @@ public class Faction {
     @Field("AdminProtected")
     private boolean adminProtected;
 
+    @Field("LastUnclaimTime")
+    public long lastUnclaimTime = 0;
+
     @Field("Home")
     private Home home;
 
@@ -477,6 +480,10 @@ public class Faction {
     public Relationship getRelationship(UUID target) {
         return relationships.stream().filter(rel -> rel.target.equals(target)).findFirst()
                 .orElse(new Relationship(target, Relationship.Status.NEUTRAL));
+    }
+
+    public boolean hasExplicitRelationship(UUID target) {
+        return relationships.stream().anyMatch(rel -> rel.target.equals(target));
     }
 
     public Relationship getReverse(Relationship rel) {

@@ -48,6 +48,10 @@ public class Config {
             Config config = gson.fromJson(new FileReader(file), Config.class);
             Config defaults = new Config();
 
+            if (config.POWER == null) {
+                config.POWER = defaults.POWER;
+            }
+
             if (config.RELATIONSHIPS == null) {
                 config.RELATIONSHIPS = defaults.RELATIONSHIPS;
             } else {
@@ -183,7 +187,7 @@ public class Config {
 
     @SerializedName("wildernessPermissions")
     public List<Relationship.Permissions> WILDERNESS_PERMISSIONS =
-            List.of(Relationship.Permissions.USE_BLOCKS, Relationship.Permissions.USE_ENTITIES, Relationship.Permissions.ATTACK_MOBS);
+            List.of(Relationship.Permissions.USE_BLOCKS, Relationship.Permissions.USE_ENTITIES, Relationship.Permissions.ATTACK_ENTITIES, Relationship.Permissions.ATTACK_MOBS);
 
     @SerializedName("wildernessRestrictedDimensions")
     public List<String> WILDERNESS_RESTRICTED_DIMENSIONS = List.of("minecraft:overworld");
@@ -237,6 +241,18 @@ public class Config {
     public static class RelationshipConfig {
         @SerializedName("allyOverridesPermissions")
         public boolean ALLY_OVERRIDES_PERMISSIONS = true;
+
+        @SerializedName("_comment_xAsGuest")
+        public String _COMMENT_X_AS_GUEST = "When enabled and no explicit relationship permissions are set, the faction's guest permissions are used as a fallback";
+
+        @SerializedName("neutralAsGuest")
+        public boolean NEUTRAL_AS_GUEST = true;
+
+        @SerializedName("friendlyAsGuest")
+        public boolean FRIENDLY_AS_GUEST = true;
+
+        @SerializedName("allyAsGuest")
+        public boolean ALLY_AS_GUEST = false;
 
         @SerializedName("defaultGuestPermissions")
         public List<Relationship.Permissions> DEFAULT_GUEST_PERMISSIONS =

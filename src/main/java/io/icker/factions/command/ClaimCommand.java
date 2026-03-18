@@ -95,6 +95,13 @@ public class ClaimCommand implements Command {
             }
         }
 
+        long remaining = getRemainingUnclaimCooldown(faction);
+        if (remaining > 0) {
+            new Message("Your faction cannot claim chunks for another %ds", remaining / 1000 + 1)
+                    .fail().send(player, false);
+            return 0;
+        }
+
         chunks.forEach(chunk -> faction.addClaim(chunk.x, chunk.z, dimension));
         if (size == 1) {
             new Message("Chunk (%d, %d) claimed by %s", chunks.get(0).x, chunks.get(0).z,
@@ -167,6 +174,7 @@ public class ClaimCommand implements Command {
             return 0;
         }
 
+        faction.lastUnclaimTime = System.currentTimeMillis();
         existingClaim.remove();
         new Message("Claim (%d, %d) removed by %s", existingClaim.x, existingClaim.z,
                 player.getName().getString()).send(faction);
@@ -192,8 +200,10 @@ public class ClaimCommand implements Command {
                 Claim existingClaim = Claim.get(chunkPos.x, chunkPos.z, dimension);
 
                 if (existingClaim != null
-                        && (user.bypass || existingClaim.getFaction().getID() == faction.getID()))
+                        && (user.bypass || existingClaim.getFaction().getID() == faction.getID())) {
+                    faction.lastUnclaimTime = System.currentTimeMillis();
                     existingClaim.remove();
+                }
             }
         }
 
@@ -213,6 +223,7 @@ public class ClaimCommand implements Command {
 
         Faction faction = Command.getUser(player).getFaction();
 
+        faction.lastUnclaimTime = System.currentTimeMillis();
         faction.removeAllClaims();
         new Message("All claims removed by %s", player.getName().getString()).send(faction);
         return 1;
@@ -305,6 +316,13 @@ public class ClaimCommand implements Command {
         new Message("Claim (%d, %d) changed to level %s by %s", claim.x, claim.z,
                 claim.accessLevel.toString(), player.getName().getString()).send(faction);
         return 1;
+    }
+
+    private static long getRemainingUnclaimCooldown(Faction faction) {
+        int cooldownSeconds = FactionsMod.CONFIG.POWER.UNCLAIM_COOLDOWN_SECONDS;
+        if (cooldownSeconds <= 0 || faction.lastUnclaimTime == 0) return 0;
+        long remaining = (cooldownSeconds * 1000L) - (System.currentTimeMillis() - faction.lastUnclaimTime);
+        return Math.max(0, remaining);
     }
 
     @Override
