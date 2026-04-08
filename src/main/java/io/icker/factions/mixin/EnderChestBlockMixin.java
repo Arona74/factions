@@ -21,6 +21,7 @@ public class EnderChestBlockMixin {
     @Inject(method = "onUse", at = @At("HEAD"), cancellable = true)
     public void onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand,
             BlockHitResult hit, CallbackInfoReturnable<ActionResult> info) {
+        if (world.isClient()) return;
         if (FactionsMod.CONFIG.SAFE == null || !FactionsMod.CONFIG.SAFE.ENDER_CHEST)
             return;
 

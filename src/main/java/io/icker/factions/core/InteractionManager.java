@@ -403,17 +403,43 @@ public class InteractionManager {
         return checkPermissions(player, pos, world, Permissions.PLACE_BLOCKS);
     }
 
+    /**
+     * Returns true if the given registry id matches the pattern.
+     * Supported patterns:
+     *   "@modid"          – any id whose namespace equals modid
+     *   "namespace:pre*"  – any id that starts with the prefix before the trailing '*'
+     *   "namespace:exact" – exact match
+     */
+    private static boolean idMatchesPattern(String id, String pattern) {
+        if (pattern.startsWith("@")) {
+            String namespace = pattern.substring(1);
+            return id.startsWith(namespace + ":");
+        }
+        if (pattern.endsWith("*")) {
+            String prefix = pattern.substring(0, pattern.length() - 1);
+            return id.startsWith(prefix);
+        }
+        return id.equals(pattern);
+    }
+
+    private static boolean listContains(java.util.List<String> list, String id) {
+        for (String pattern : list) {
+            if (idMatchesPattern(id, pattern)) return true;
+        }
+        return false;
+    }
+
     private static boolean isBlockExempt(String blockId) {
         var list = FactionsMod.CONFIG.BLOCK_LIST;
-        if (list.WHITELIST_ENABLED && list.WHITELIST.contains(blockId)) return true;
-        if (list.BLACKLIST_ENABLED && !list.BLACKLIST.contains(blockId)) return true;
+        if (list.WHITELIST_ENABLED && listContains(list.WHITELIST, blockId)) return true;
+        if (list.BLACKLIST_ENABLED && !listContains(list.BLACKLIST, blockId)) return true;
         return false;
     }
 
     private static boolean isMobExempt(String entityId) {
         var list = FactionsMod.CONFIG.MOB_LIST;
-        if (list.WHITELIST_ENABLED && list.WHITELIST.contains(entityId)) return true;
-        if (list.BLACKLIST_ENABLED && !list.BLACKLIST.contains(entityId)) return true;
+        if (list.WHITELIST_ENABLED && listContains(list.WHITELIST, entityId)) return true;
+        if (list.BLACKLIST_ENABLED && !listContains(list.BLACKLIST, entityId)) return true;
         return false;
     }
 

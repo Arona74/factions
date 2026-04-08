@@ -19,6 +19,22 @@ Please note that no support will be provided by original Factions Mod dev team, 
 - Additional relationship level (FRIENDLY)
 - Compat API for my Simplyskills/Simplyswords forks (done for "Conquest of the Bleak Isles" server, new entries in config to set relationship level for friendly fire)
 - Home marker on Bluemap use HTMLmarker instead of POImarker
+- Block/mob filter lists (blacklist & whitelist) with pattern support:
+  - `@modid` — matches all blocks/mobs from a mod (e.g. `@comforts`)
+  - `namespace:prefix*` — wildcard suffix match (e.g. `comforts:sleeping_bag*`)
+  - `namespace:exact` — exact id match
+- CarryOn mod compat: entity placement (putting down a carried mob) can be blocked by claim protection via `carryOnEntityPlacement` config option
+- Faction safe (ender chest replacement) is toggleable per config
+- Restricted wilderness mode with per-dimension control and configurable permissions
+- Vassal system: factions can become vassals of others, contributing a % of their power to the overlord
+- Wealth power: factions can sacrifice items to gain bonus power up to a configurable cap
+- War & fame power pools with kill rewards and decay
+- God blessings system: factions pray to gods for timed potion effects at a power cost
+- Inactivity tiers: power multiplier decay based on days since last member login
+- Claim decay: auto-unclaim chunks when faction power drops below threshold
+- Unclaim cooldown: prevent immediate re-claiming of recently unclaimed chunks
+- Territory entry/exit notifications via chat, action bar, or title
+- Dynamic tab menu and chat formatting
 
 **CHANGES COMING FROM 2.9.0 original Factions**
 - Fix: ickerio#101
