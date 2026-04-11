@@ -171,6 +171,12 @@ public class Config {
     @SerializedName("carryOnEntityPlacement")
     public boolean CARRY_ON_ENTITY_PLACEMENT = false;
 
+    @SerializedName("_comment_inventoryBlocks")
+    public String _COMMENT_INVENTORY_BLOCKS = "Blocks treated as inventories for permission purposes (USE_INVENTORIES instead of USE_BLOCKS). Supports @modid, namespace:prefix*, and exact patterns. Example: numismatic-overhaul:piggy_bank";
+
+    @SerializedName("inventoryBlocks")
+    public ArrayList<String> INVENTORY_BLOCKS = new ArrayList<>();
+
     @SerializedName("_comment_blockList")
     public String _COMMENT_BLOCK_LIST = "Block filter lists. Blacklist: only listed blocks are subject to claim protection. Whitelist: listed blocks always bypass protection. Whitelist takes priority when both enabled.";
 

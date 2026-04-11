@@ -275,6 +275,7 @@ public class AdminCommand implements Command {
                 .add(new Message(FactionsMod.CONFIG.CARRY_ON_ENTITY_PLACEMENT ? "true" : "false")
                         .format(FactionsMod.CONFIG.CARRY_ON_ENTITY_PLACEMENT ? Formatting.GREEN : Formatting.RED))
                 .send(player, false);
+        new Message(Formatting.GRAY + "  Inventory Blocks: " + Formatting.WHITE + String.join(", ", FactionsMod.CONFIG.INVENTORY_BLOCKS)).send(player, false);
 
         // Power settings
         new Message(Formatting.YELLOW + "Power Settings:").send(player, false);
@@ -662,6 +663,31 @@ public class AdminCommand implements Command {
         return 1;
     }
 
+    private int addInventoryBlock(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
+        String id = StringArgumentType.getString(context, "id");
+        if (FactionsMod.CONFIG.INVENTORY_BLOCKS.contains(id)) {
+            new Message("%s is already in the inventory blocks list", id).fail().send(player, false);
+            return 0;
+        }
+        FactionsMod.CONFIG.INVENTORY_BLOCKS.add(id);
+        FactionsMod.CONFIG.save();
+        new Message("Added %s to inventory blocks list", id).send(player, false);
+        return 1;
+    }
+
+    private int removeInventoryBlock(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
+        String id = StringArgumentType.getString(context, "id");
+        if (!FactionsMod.CONFIG.INVENTORY_BLOCKS.remove(id)) {
+            new Message("%s is not in the inventory blocks list", id).fail().send(player, false);
+            return 0;
+        }
+        FactionsMod.CONFIG.save();
+        new Message("Removed %s from inventory blocks list", id).send(player, false);
+        return 1;
+    }
+
     private int setCarryOnEntityPlacement(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         boolean value = BoolArgumentType.getBool(context, "value");
         FactionsMod.CONFIG.CARRY_ON_ENTITY_PLACEMENT = value;
@@ -884,6 +910,13 @@ public class AdminCommand implements Command {
                                 .then(CommandManager.literal("carryOnEntityPlacement")
                                         .then(CommandManager.argument("value", BoolArgumentType.bool())
                                                 .executes(this::setCarryOnEntityPlacement)))
+                                .then(CommandManager.literal("inventoryBlocks")
+                                        .then(CommandManager.literal("add")
+                                                .then(CommandManager.argument("id", StringArgumentType.string())
+                                                        .executes(this::addInventoryBlock)))
+                                        .then(CommandManager.literal("remove")
+                                                .then(CommandManager.argument("id", StringArgumentType.string())
+                                                        .executes(this::removeInventoryBlock))))
                                 // Power config
                                 .then(CommandManager.literal("power")
                                         .then(CommandManager.literal("base")

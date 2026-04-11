@@ -23,7 +23,8 @@ Please note that no support will be provided by original Factions Mod dev team, 
   - `@modid` — matches all blocks/mobs from a mod (e.g. `@comforts`)
   - `namespace:prefix*` — wildcard suffix match (e.g. `comforts:sleeping_bag*`)
   - `namespace:exact` — exact id match
-- CarryOn mod compat: entity placement (putting down a carried mob) can be blocked by claim protection via `carryOnEntityPlacement` config option
+- `inventoryBlocks` list: designate any third-party block as an inventory for permission purposes (`USE_INVENTORIES` instead of `USE_BLOCKS`). Built-in support for Numismatic Overhaul (`numismatic-overhaul:piggy_bank`) and Tom's Simple Storage (`toms_storage:ts.storage_terminal`, `toms_storage:ts.crafting_terminal`). Supports the same `@modid`/`prefix*`/exact patterns as filter lists.
+- CarryOn mod compat: block and entity placement (putting down a carried block/mob) is blocked by claim protection; entity placement can be toggled via `carryOnEntityPlacement` config option
 - Faction safe (ender chest replacement) is toggleable per config
 - Restricted wilderness mode with per-dimension control and configurable permissions
 - Vassal system: factions can become vassals of others, contributing a % of their power to the overlord

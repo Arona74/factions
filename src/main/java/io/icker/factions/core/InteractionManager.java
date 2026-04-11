@@ -149,6 +149,15 @@ public class InteractionManager {
         String blockId = Registries.BLOCK.getId(world.getBlockState(hitPos).getBlock()).toString();
         if (isBlockExempt(blockId)) return ActionResult.PASS;
 
+        if (listContains(FactionsMod.CONFIG.INVENTORY_BLOCKS, blockId)) {
+            if (checkPermissions(player, hitPos, world, Permissions.USE_INVENTORIES) == ActionResult.FAIL) {
+                InteractionsUtil.warn(player, InteractionsUtilActions.USE_INVENTORY);
+                InteractionsUtil.sync(player, stack, hand);
+                return ActionResult.FAIL;
+            }
+            return ActionResult.PASS;
+        }
+
         if (checkPermissions(player, hitPos, world, Permissions.USE_BLOCKS) == ActionResult.FAIL) {
             InteractionsUtil.warn(player, InteractionsUtilActions.USE_BLOCKS);
             InteractionsUtil.sync(player, stack, hand);
