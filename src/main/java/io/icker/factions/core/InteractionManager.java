@@ -25,6 +25,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BucketItem;
+import net.minecraft.item.DebugStickItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
@@ -177,7 +178,21 @@ public class InteractionManager {
 
     private static ActionResult onPlaceBlock(ItemUsageContext context) {
         if (context.getWorld().isClient()) return ActionResult.PASS;
-        if (!(context.getStack().getItem() instanceof BlockItem blockItem)) return ActionResult.PASS;
+        Item item = context.getStack().getItem();
+
+        if (item instanceof DebugStickItem) {
+            String blockId = Registries.BLOCK.getId(context.getWorld().getBlockState(context.getBlockPos()).getBlock()).toString();
+            if (isBlockExempt(blockId)) return ActionResult.PASS;
+            if (checkPermissions(context.getPlayer(), context.getBlockPos(), context.getWorld(),
+                    Permissions.PLACE_BLOCKS) == ActionResult.FAIL) {
+                InteractionsUtil.warn(context.getPlayer(), InteractionsUtilActions.PLACE_BLOCKS);
+                InteractionsUtil.sync(context.getPlayer(), context.getStack(), context.getHand());
+                return ActionResult.FAIL;
+            }
+            return ActionResult.PASS;
+        }
+
+        if (!(item instanceof BlockItem blockItem)) return ActionResult.PASS;
         String blockId = Registries.BLOCK.getId(blockItem.getBlock()).toString();
         if (isBlockExempt(blockId)) return ActionResult.PASS;
         if (checkPermissions(context.getPlayer(), context.getBlockPos(), context.getWorld(),
